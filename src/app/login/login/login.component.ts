@@ -3,7 +3,6 @@ import { FormBuilder, FormGroup, FormsModule, Validators } from '@angular/forms'
 import { CustomerService } from '../../services/customer/customer.service';
 import { MovementsComponent } from '../../movements/movements/movements.component';
 import { CommonModule } from '@angular/common'; 
-import { Router } from '@angular/router';
 
 export interface customer {
   name: string;
@@ -23,6 +22,7 @@ export class LoginComponent implements OnInit {
   modeloFormulario: any = {};
   loginForm! : FormGroup;
   ELEMENT_DATA: any = [];
+  condicion: boolean = true;
   inputValue: string = '';
   onInputChange(event: Event): void {
     // Obtén el valor del input cuando cambie
@@ -30,7 +30,7 @@ export class LoginComponent implements OnInit {
     console.log(this.inputValue);
   }
 
-  constructor(public fb: FormBuilder, public customer: CustomerService, private router: Router){
+  constructor(public fb: FormBuilder, public customer: CustomerService){
   }
 
   ngOnInit(): void {
@@ -45,13 +45,14 @@ export class LoginComponent implements OnInit {
   }
 
   login(): void{
+    this.condicion = !this.condicion;
     this.customer.getAllCustomer().subscribe((resp : any) =>{
 
       this.ELEMENT_DATA = resp.filter((element: any) => {
 
         if (element !== null) {
          if (element.password === this.modeloFormulario.password && element.email === this.modeloFormulario.email ) {
-            this.activarComponente = true;
+            this.condicion = false;
             this.ELEMENT_DATA.name = element.email ;
             this.ELEMENT_DATA.password =  element.password;
 
@@ -59,7 +60,6 @@ export class LoginComponent implements OnInit {
         }
         return false; // Retorna false para los elementos nulos
       })
-      this.router.navigate(['/movements']);
     },
     error=>(console.log(error)));
     
